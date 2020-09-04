@@ -1,12 +1,25 @@
 {% extends 'App_Login/navbar.html' %}
 {% load static %}  
-{% load crispy_forms_tags%}
-{% block title_block %} {{title}} {% endblock %}
+{%block title_block %} {{title}} {%endblock%}
 {% block css_block%} 
- {% endblock %}
-    
+    <style>
+  .crop {
+    width: 300px;
+    height: 300px;
+    overflow: hidden;
+  }
 
-{% block body_block %}
+  .crop img {
+    border: 5px solid #ddd;
+    border-radius: 9px;
+    padding: 7px;
+    width: 300px;
+  }
+</style>
+
+ {% endblock %}
+
+{%block body_block%}
 {% if search %}
 {% for user in result %}
 <div class="row">
@@ -17,13 +30,70 @@
     <img src="/media/default.png" width="75px" height="75px" class="rounded-circle">
     {% endif %}
   </div>
-  <div class="col-sm-10" style="font-family: 'Yanone Kaffeesatz', sans-serif;">
-    <a href="{% url 'App_Login:user' username=user.username %}" >{{user.username}}</a>
+  <div class="col-sm-10">
+    <a href="{% url 'App_Login:user' username=user.username %}">{{user.username}}</a>
     <br>
     {{user.user_profile.full_name}}
   </div>
 </div>
 <br>
 {% endfor %}
+{% else %}
+<div class="row">
+  <div class="col-sm-8">
+
+      {% for post in posts %}
+     
+        <div style="padding:10px">
+        {% comment %} the post i like then their author their user account then their pic  {% endcomment %}
+          {% if post.author.user_profile.profile_pic %}
+            <img src="/media/{{user.user_profile.profile_pic}}" width="40px" height="40px" class="rounded-circle">
+          {% else %}
+            <img src="/media/default.png" width="40px" height="40px" class="rounded-circle">
+          {% endif %}
+          {% comment %} post.author is the user {% endcomment %}
+          <a href="{% url 'App_Login:user' username=post.author %}">{{post.author}}</a>
+        </div>
+        <div class="crop">
+            {% comment %} their image they posted {% endcomment %}
+            <img src='/media/{{post.image}}'>
+        </div>
+        {% comment %} little padding bellow the image {% endcomment %}
+        <div style="padding:20px">
+          {{post.caption}}<br>
+          {{ post.liked_post.count }} Likes <br>
+          {% if post.pk in liked_post_list %}
+          {% comment %} Like and unlike functionality {% endcomment %}
+          <a href="{% url 'App_Posts:unliked' pk=post.pk %}"><i class="fa fa-heart" style="font-size:36px"></i></a>
+          {% else %}
+          <a href="{% url 'App_Posts:liked' pk=post.pk %}"><i class="fa fa-heart -o" style="font-size:36px"></i></a>
+          {% endif %}
+        
+      </div>
+      <br>
+      <br>
+      {% endfor %}
+
+  </div>
+
+{% comment %} This is kust your user account shown at the side {% endcomment %}
+  <div class="col-sm-4">
+    <div class="row">
+      <div class="col-sm-4">
+        {% if user.user_profile.profile_pic %}
+        <img src="/media/{{user.user_profile.profile_pic}}" width="75px" height="75px" class="rounded-circle">
+        {% else %}
+        <img src="/media/default.png" width="75px" height="75px" class="rounded-circle">
+        {% endif %}
+      </div>
+      <div class="col-sm-8">
+        {{user.username}}
+        <br>
+        {{user.user_profile.full_name}}
+      </div>
+    </div>
+  </div>
+</div>
+
 {% endif %}
-{% endblock %}
+{%endblock%}
