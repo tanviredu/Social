@@ -68,4 +68,4 @@ def profile(request):
             post.author = request.user
             post.save()
             return HttpResponseRedirect(reverse('home'))
-    return render(request,'App_login/user.html',context={'title':'User','form':form})
+    return render(request,'App_Login/user.html',context={'title':'User','form':form})
