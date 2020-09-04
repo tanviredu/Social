@@ -33,18 +33,25 @@ def login_page(request):
             if user is not None:
                 login(request,user)
                 print("[+] User Logged in")
-                pass
+                return HttpResponseRedirect(reverse('App_Login:edit'))
+                #test
+
     return render(request,'App_Login/login.html',{'title':'Login','form':form})
 
 @login_required
 def edit_profile(request):
     current_user = UserProfile.objects.get(user=request.user)
     form = EditProfile(instance=current_user)
-    if request.method == "POST":
-        form = EditProfile(request.POST,request.FILES,instance=current_user)
+    if request.method == 'POST':
+        form = EditProfile(request.POST, request.FILES, instance=current_user)
         if form.is_valid():
-            form.save()
-            ## reset the form
+            form.save(commit=True)
             form = EditProfile(instance=current_user)
             return HttpResponseRedirect(reverse('App_Login:profile'))
-    return render(request,'App_Login/profile.html',{'form':form,'title':'Edit Title'})
+    return render(request, 'App_Login/profile.html', context={'c_user':current_user,'form':form, 'title':'Edit Profile . Social'})
+
+
+@login_required
+def logout_user(request):
+    logout(request)
+    return HttpResponseRedirect(reverse('App_Login:login'))
