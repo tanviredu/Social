@@ -5,6 +5,7 @@ from django.urls import reverse,reverse_lazy
 from .models import UserProfile,User
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
+from App_Posts.forms import PostForm
 
 
 def signup(request):
@@ -33,7 +34,7 @@ def login_page(request):
             if user is not None:
                 login(request,user)
                 print("[+] User Logged in")
-                return HttpResponseRedirect(reverse('App_Login:edit'))
+                return HttpResponseRedirect(reverse('App_Posts:home'))
                 #test
 
     return render(request,'App_Login/login.html',{'title':'Login','form':form})
@@ -55,3 +56,16 @@ def edit_profile(request):
 def logout_user(request):
     logout(request)
     return HttpResponseRedirect(reverse('App_Login:login'))
+
+
+@login_required
+def profile(request):
+    form = PostForm()
+    if request.method == "POST":
+        form = PostForm(request.POST,request.FILES)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.author = request.user
+            post.save()
+            return HttpResponseRedirect(reverse('home'))
+    return render(request,'App_login/user.html',context={'title':'User','form':form})

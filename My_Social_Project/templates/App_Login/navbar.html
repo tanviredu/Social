@@ -22,7 +22,7 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav mr-auto">
                     <li class="nav-item active">
-                        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                        <a class="nav-link" href="{% url "App_Posts:home" %}">Home <span class="sr-only">(current)</span></a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">Link</a>
@@ -39,8 +39,18 @@
                         </div>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link disabled" href="#">Disabled</a>
+                        <a class="nav-link btn btn-outline-danger" style="border:1px solid #555;"  href="{% url 'App_Login:logout' %}">Logout</a>
                     </li>
+                    <li class="nav-item">
+                        {% if user.user_profile.profile_pic %}
+                        <a class="nav-link " style="border:1px solid #555;;margin-left:10px"  href="#"><img style="width:24px;" class="rounded-circle" src="/media/{{user.user_profile.profile_pic}}" </a>
+                        {% else %}
+                        <a class="nav-link " style="border:1px solid #555;margin-left:10px;"  href="#"><img style="width:24px;" class="rounded-circle" src="/media/default.png"></a>
+                        {% endif %}
+                    </li>
+                    
+
+
                     </ul>
                     <form class="form-inline my-2 my-lg-0">
                     <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
