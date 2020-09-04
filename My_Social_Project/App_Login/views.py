@@ -2,7 +2,7 @@ from django.shortcuts import render,HttpResponseRedirect
 from .forms import CreateNewUser,EditProfile
 from django.contrib.auth import authenticate,login,logout
 from django.urls import reverse,reverse_lazy
-from .models import UserProfile,User
+from .models import UserProfile,User,Follow
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from App_Posts.forms import PostForm
@@ -69,3 +69,32 @@ def profile(request):
             post.save()
             return HttpResponseRedirect(reverse('home'))
     return render(request,'App_Login/user.html',context={'title':'User Profile','form':form})
+
+@login_required
+def user(request,username):
+    you = request.user
+    user_other = User.objects.get(username=username)
+    already_followed = Follow.objects.filter(follower=you,following=user_other)
+    ## if he click his own profile
+    if user_other == request.user:
+        return HttpResponseRedirect(reverse('App_Login:profile'))
+    return render(request,'App_Login/user_other.html',context={'user_other':user_other,'already_followed':already_followed})
+
+@login_required
+def follow(request,username):
+    you = request.user
+    other_people = User.objects.get(username=username)
+    ##check if already foloed
+    already_followed = Follow.objects.filter(follower=you,following=other_people)
+    if not already_followed:
+        followed_user = Follow(follower=you,following=other_people)
+        followed_user.save()
+    return HttpResponseRedirect(reverse('App_Login:user',kwargs={'username':username}))
+
+@login_required
+def unfollow(request,username):
+    you = request.user
+    other_people = User.objects.get(username=username)
+    already_followed = Follow.objects.filter(follower=you,following=other_people)
+    already_followed.delete()
+    return HttpResponseRedirect(reverse("App_Login:user",kwargs={'username':username}))

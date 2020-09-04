@@ -1,0 +1,63 @@
+{% extends 'App_Login/navbar.html' %}
+{% load static %}  
+{% load crispy_forms_tags%}
+{% block title_block %} {{title}} {% endblock %}
+{% block css_block%} 
+<style>
+  .crop {
+    width: 300px;
+    height: 300px;
+    overflow: hidden;
+  }
+
+  .crop img {
+    border: 5px solid #ddd;
+    border-radius: 9px;
+    padding: 7px;
+    width: 300px;
+
+    div.polaroid {
+  width: 80%;
+  background-color: white;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  margin-bottom: 25px;
+    }
+  }
+</style>
+{% endblock%}
+
+{%block body_block%}
+<div class="row">
+  <div class="col-sm-4">
+    {% if user_other.user_profile.profile_pic %}
+    <img src="/media/{{user_other.user_profile.profile_pic}}" width="250px" height="250px" class="rounded-circle">
+    {% else %}
+    <img src="/media/default.png" width="250px" height="250px" class="rounded-circle">
+    {% endif %}
+  </div>
+  <div class="col-sm-8 container">
+  {% if not already_followed %}
+    <a href="{% url 'App_Login:follow' username=user_other.username %}" class="btn btn-primary">Follow</a>
+  {% else %}
+    <a href="{% url 'App_Login:unfollow' username=user_other.username %}" class="btn btn-danger">Unfollow</a>
+  {% endif %}
+    <center><h1 style="font-family: 'Yanone Kaffeesatz', sans-serif;">{{user_other.user_profile}}</center></h1>
+    <br>
+    <br>
+    <h4 style="font-family: 'Yanone Kaffeesatz', sans-serif;">{{user_other.post.count}} posts &nbsp; &nbsp; {{user_other.following.count}} followers &nbsp; &nbsp; {{user_other.follower.count}} following</h4>
+    <br>
+    <h3 style="font-family: 'Yanone Kaffeesatz', sans-serif;">{{user_other.user_profile.full_name}}</h3>
+    <p>{{user_other.user_profile.description|linebreaks}}</p>
+    
+  </div>
+</div>
+<hr>
+
+<div class="row">
+    {% for post in user_other.post.all%}
+        <div class="crop">
+            <img  src="/media/{{post.image}}" alt="{{post.caption}}">
+        </div>
+    {% endfor %}
+</div>
+{% endblock%}
